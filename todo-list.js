@@ -30,7 +30,11 @@ function renderTodoList() {
   for (let i = 0; i < todoListObject.length; i++) {
     const todos = todoListObject[i];
     const { name, dueDate } = todos;
-    const html = `<div>${name}</div>
+    const html = `<div>
+    <input type="checkbox"  id="name"/ >
+    <label for="name"> ${name}
+    </label>
+    </div>
    <div> ${dueDate}</div>
     <button onclick=" 
     todoListObject.splice(${i},1);
