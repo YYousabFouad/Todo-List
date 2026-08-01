@@ -1,36 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./about.css" />
-    <link rel="icon" href="./todo.png" />
-    <title>Todo List</title>
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="about.css" />
   </head>
   <body>
-    <header>
-      <h1>Todo List</h1>
-    </header>
-    <div class="todo-input-grid">
-      <input
-        type="text"
-        name="input-name"
-        placeholder="Write your todo"
-        class="todo-space name-input"
-        required />
-      <input
-        type="date"
-        class="js-due-date due-date-input"
-        onkeydown="checkKey(event)" />
-      <button
-        onclick="
-    addTodo();"
-        class="add-todo-button">
-        Add
-      </button>
+    <div class="container">
+      <header>
+        <div class="logo-wrapper">
+          <svg
+            class="todo-logo"
+            viewBox="0 0 64 64"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4f46e5" />
+                <stop offset="100%" stop-color="#e73c7e" />
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="16" fill="url(#logoGrad)" />
+            <path
+              d="M18 32L28 42L46 22"
+              stroke="white"
+              stroke-width="6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <h1>Task Manager</h1>
+        </div>
+        <p>Organize your daily tasks easily</p>
+      </header>
+
+      <form id="task-form">
+        <input
+          type="text"
+          id="task-input"
+          placeholder="Add a new task..."
+          required
+          autocomplete="off"
+        />
+        <input type="date" id="due-date-input" title="Select due date" />
+        <button type="submit" id="add-btn">Add Task</button>
+      </form>
+
+      <div class="filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="active">Active</button>
+        <button class="filter-btn" data-filter="completed">Completed</button>
+      </div>
+
+      <ul id="task-list"></ul>
+
+      <div class="footer-stats">
+        <span id="items-left">0 tasks left</span>
+        <button id="clear-completed">Clear Completed</button>
+      </div>
     </div>
-    <div class="js-todo-list todo-grid"></div>
-    <div class="js-done-list todo-grid"></div>
-    <script src="./todo-list.js"></script>
+
+    <script src="todo-list.js"></script>
   </body>
 </html>
