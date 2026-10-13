@@ -1,64 +1,253 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Task Manager</title>
+    <title>Taskflow • Modern Task Manager</title>
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="about.css" />
   </head>
   <body>
+    <!-- Background Ambient Glow Orbs -->
+    <div class="ambient-glow glow-1" aria-hidden="true"></div>
+    <div class="ambient-glow glow-2" aria-hidden="true"></div>
+    <div class="ambient-glow glow-3" aria-hidden="true"></div>
+
+    <!-- Celebration Canvas for Confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
     <div class="container">
+      <!-- Top Bar: Logo, Date & Theme Toggle -->
       <header>
-        <div class="logo-wrapper">
-          <svg
-            class="todo-logo"
-            viewBox="0 0 64 64"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4f46e5" />
-                <stop offset="100%" stop-color="#e73c7e" />
-              </linearGradient>
-            </defs>
-            <rect width="64" height="64" rx="16" fill="url(#logoGrad)" />
-            <path
-              d="M18 32L28 42L46 22"
-              stroke="white"
-              stroke-width="6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-          <h1>Task Manager</h1>
+        <div class="header-top">
+          <div class="logo-wrapper">
+            <div class="logo-icon">
+              <svg
+                class="todo-logo"
+                viewBox="0 0 64 64"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <defs>
+                  <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#6366f1" />
+                    <stop offset="50%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                </defs>
+                <rect width="64" height="64" rx="18" fill="url(#logoGrad)" />
+                <path
+                  d="M19 33L27 41L45 23"
+                  stroke="white"
+                  stroke-width="5.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="brand-text">
+              <h1>Taskflow</h1>
+              <p class="tagline">Master your day, one task at a time</p>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            <div class="date-badge" id="current-date-badge" title="Today's date">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span id="header-date">Today</span>
+            </div>
+
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle dark/light theme" title="Toggle theme">
+              <svg class="theme-sun-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <svg class="theme-moon-icon icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </button>
+          </div>
         </div>
-        <p>Organize your daily tasks easily</p>
+
+        <!-- Progress Overview Widget -->
+        <div class="progress-section" id="progress-section">
+          <div class="progress-info">
+            <span class="progress-label" id="progress-label">Task Progress</span>
+            <span class="progress-percentage" id="progress-percentage">0%</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%"></div>
+          </div>
+          <div class="progress-motivation" id="progress-motivation">Add tasks to kickstart your day!</div>
+        </div>
       </header>
 
+      <!-- Task Creation Form -->
       <form id="task-form">
-        <input
-          type="text"
-          id="task-input"
-          placeholder="Add a new task..."
-          required
-          autocomplete="off"
-        />
-        <input type="date" id="due-date-input" title="Select due date" />
-        <button type="submit" id="add-btn">Add Task</button>
+        <div class="form-main-row">
+          <div class="input-wrapper task-input-wrapper">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            <input
+              type="text"
+              id="task-input"
+              placeholder="What do you need to accomplish?"
+              required
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-controls-row">
+            <!-- Priority Selector -->
+            <div class="select-wrapper priority-wrapper" title="Set priority level">
+              <select id="priority-input" aria-label="Priority">
+                <option value="medium">🟡 Normal</option>
+                <option value="high">🔴 High</option>
+                <option value="low">🟢 Low</option>
+              </select>
+            </div>
+
+            <!-- Due Date Picker -->
+            <div class="input-wrapper date-input-wrapper" title="Select due date">
+              <input type="date" id="due-date-input" title="Select due date" />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="add-btn">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add Task</span>
+            </button>
+          </div>
+        </div>
       </form>
 
-      <div class="filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="active">Active</button>
-        <button class="filter-btn" data-filter="completed">Completed</button>
+      <!-- Search & Filters Toolbar -->
+      <div class="toolbar">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="search-input" placeholder="Search tasks..." autocomplete="off" />
+          <button type="button" id="clear-search-btn" class="clear-search-btn" aria-label="Clear search" title="Clear search">✕</button>
+        </div>
+
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">
+            <span>All</span>
+            <span class="filter-count" id="count-all">0</span>
+          </button>
+          <button class="filter-btn" data-filter="active">
+            <span>Active</span>
+            <span class="filter-count" id="count-active">0</span>
+          </button>
+          <button class="filter-btn" data-filter="completed">
+            <span>Done</span>
+            <span class="filter-count" id="count-completed">0</span>
+          </button>
+        </div>
       </div>
 
+      <!-- Task List Container -->
       <ul id="task-list"></ul>
 
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-illustration">
+          <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="54" fill="currentColor" fill-opacity="0.05" />
+            <rect x="36" y="30" width="48" height="62" rx="8" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <path d="M48 26C48 24.3431 49.3431 23 51 23H69C70.6569 23 72 24.3431 72 26V30H48V26Z" stroke="currentColor" stroke-width="3" />
+            <line x1="46" y1="46" x2="74" y2="46" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <line x1="46" y1="58" x2="74" y2="58" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <line x1="46" y1="70" x2="64" y2="70" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            <circle cx="82" cy="78" r="16" fill="url(#sparkleGrad)" />
+            <path d="M77 78L80.5 81.5L88 74" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            <defs>
+              <linearGradient id="sparkleGrad" x1="66" y1="62" x2="98" y2="94" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#10B981" />
+                <stop offset="1" stop-color="#059669" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h3 id="empty-title">All tasks completed!</h3>
+        <p id="empty-subtitle">Great job! Enjoy your free time or add a new goal above.</p>
+      </div>
+
+      <!-- Footer Stats & Actions -->
       <div class="footer-stats">
-        <span id="items-left">0 tasks left</span>
-        <button id="clear-completed">Clear Completed</button>
+        <div class="footer-left">
+          <span class="status-indicator"></span>
+          <span id="items-left">0 tasks left</span>
+        </div>
+        <div class="footer-actions">
+          <button id="clear-completed" title="Remove all completed tasks">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Clear Completed</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div id="edit-modal" class="modal-overlay" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Edit Task</h3>
+          <button id="close-modal-btn" class="icon-btn close-btn" aria-label="Close modal">✕</button>
+        </div>
+        <form id="edit-form">
+          <div class="modal-body">
+            <label for="edit-task-input">Task Title</label>
+            <input type="text" id="edit-task-input" required autocomplete="off" />
+
+            <div class="modal-row">
+              <div class="modal-col">
+                <label for="edit-priority-input">Priority</label>
+                <select id="edit-priority-input">
+                  <option value="low">🟢 Low</option>
+                  <option value="medium">🟡 Normal</option>
+                  <option value="high">🔴 High</option>
+                </select>
+              </div>
+              <div class="modal-col">
+                <label for="edit-due-date-input">Due Date</label>
+                <input type="date" id="edit-due-date-input" />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="cancel-edit-btn" class="secondary-btn">Cancel</button>
+            <button type="submit" id="save-edit-btn" class="primary-btn">Save Changes</button>
+          </div>
+        </form>
       </div>
     </div>
 
