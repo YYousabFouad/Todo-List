@@ -58,7 +58,26 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------------------------------------------------
   // State
   // -------------------------------------------------------------------------
-  let tasks = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS)) || [];
+  const readTasks = () => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASKS) || "[]");
+      if (!Array.isArray(stored)) return [];
+      return stored
+        .filter((task) => task && (typeof task.id === "string" || typeof task.id === "number") && typeof task.text === "string")
+        .map((task) => ({
+          ...task,
+          id: String(task.id),
+          text: task.text,
+          completed: Boolean(task.completed),
+          priority: ["high", "medium", "low"].includes(task.priority) ? task.priority : "medium",
+          dueDate: typeof task.dueDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(task.dueDate) ? task.dueDate : "",
+        }));
+    } catch {
+      return [];
+    }
+  };
+
+  let tasks = readTasks();
   let currentFilter = "all";
   let searchQuery = "";
   let editingTaskId = null;
@@ -68,11 +87,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------------------------------------------------
   const setTheme = (theme) => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_KEYS.THEME, theme);
+    try {
+      localStorage.setItem(STORAGE_KEYS.THEME, theme);
+    } catch {
+      // The selected theme still applies for this session if storage is unavailable.
+    }
   };
 
   const initTheme = () => {
-    const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+    let saved = null;
+    try {
+      saved = localStorage.getItem(STORAGE_KEYS.THEME);
+    } catch {
+      // Fall back to the system preference when storage is unavailable.
+    }
     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setTheme(saved || (systemPrefersDark ? "dark" : "light"));
   };
@@ -135,7 +163,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------------------------------------------------
   const commitTasks = (updater) => {
     tasks = typeof updater === "function" ? updater(tasks) : updater;
-    localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+    try {
+      localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+    } catch {
+      // Keep the app usable for this session when storage is unavailable or full.
+    }
     renderTasks();
   };
 
@@ -534,14 +566,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const checkboxWrapper = target.closest(".custom-checkbox-wrapper");
     const taskText = target.closest(".task-text");
-    if (checkboxWrapper || taskText) {
+    if (taskText) {
       const taskItem = target.closest(".task-item");
       if (taskItem) {
         toggleTask(taskItem.getAttribute("data-id"));
       }
     }
+  });
+
+  taskList.addEventListener("change", (e) => {
+    if (!e.target.matches(".task-checkbox")) return;
+    const taskItem = e.target.closest(".task-item");
+    if (taskItem) toggleTask(taskItem.getAttribute("data-id"));
   });
 
   filterBtns.forEach((btn) => {
