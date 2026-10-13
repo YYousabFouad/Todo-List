@@ -266,6 +266,7 @@ header {
   letter-spacing: -0.03em;
   background: var(--gradient-brand);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1.15;
 }
